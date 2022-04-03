@@ -73,12 +73,12 @@ CommandInfo ParseCommand(const std::string& receivedText)
 ClientHandler::ClientHandler(int socketFd)
 	: SocketFd(socketFd)
 {
-	LOG(std::string("Constructing ClientHandler #") + std::to_string(socketFd));
+	LOG(std::string("Constructing ClientHandler #") + std::to_string(SocketFd));
 }
 	
 ClientHandler::~ClientHandler()
 {
-	LOG(std::string("Destructing ClientHandler #") + std::to_string(socketFd));
+	LOG(std::string("Destructing ClientHandler #") + std::to_string(SocketFd));
 	if (close(SocketFd) == -1) {
 		PRINT_PERROR_MESSAGE("Unable to close socket");
 	}
@@ -93,7 +93,7 @@ void ClientHandler::Handle()
 
 		memset(Buffer, 0, sizeof(Buffer));
 		if (recv(SocketFd, Buffer, sizeof(Buffer), 0) <= 0) {
-			PRINT_PERROR_MESSAGE(std::string("ClientHandler #") + std::to_string(socketFd) + "Cannot read anything from client");
+			PRINT_PERROR_MESSAGE(std::string("ClientHandler #") + std::to_string(SocketFd) + "Cannot read anything from client");
 			IsHandling = false;
 			break;
 		}
@@ -160,7 +160,7 @@ void ClientHandler::SendMessage(const std::string& message)
 			toSend.length() - totalSent, 0);
 		if (bytesSent <= 0) {
 			std::ostringstream out;
-			out << std::string("ClientHandler #") << std::to_string(socketFd) << "Failed to send message \"" << message << "\"";
+			out << std::string("ClientHandler #") << std::to_string(SocketFd) << "Failed to send message \"" << message << "\"";
 			PRINT_PERROR_MESSAGE(out.str());
 			IsHandling = false;
 			break;
