@@ -38,7 +38,7 @@ public:
 private:
 	void HandleCommand();
 	void HandleUpdateSequenceCommand(const CommandInfo& commandInfo);
-	void HandleExportSequencesCommand(const CommandInfo& commandInfo);
+	void HandleExportSequencesCommand();
 	void SendMessage(const std::string& message);
 
 public:

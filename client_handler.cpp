@@ -108,7 +108,7 @@ void ClientHandler::HandleCommand()
 	} else if (commandInfo.Type == CommandType::UPDATE_SEQUENCE) {
 		HandleUpdateSequenceCommand(commandInfo);
 	} else {
-		HandleExportSequencesCommand(commandInfo);
+		HandleExportSequencesCommand();
 	}
 }
 
@@ -124,7 +124,7 @@ void ClientHandler::HandleUpdateSequenceCommand(const CommandInfo& commandInfo)
 	Sequences[commandInfo.SeqNumber].Set(commandInfo.Base, commandInfo.Step);
 }
 
-void ClientHandler::HandleExportSequencesCommand(const CommandInfo& commandInfo)
+void ClientHandler::HandleExportSequencesCommand()
 {
 	auto it = std::find_if(Sequences.cbegin(), Sequences.cend(),
 		[](const auto& seq){ return !seq.IsSet(); });
@@ -154,7 +154,7 @@ void ClientHandler::SendMessage(const std::string& message)
 	size_t totalSent = 0;
 	while (totalSent != toSend.length()) {
 		ssize_t bytesSent = send(SocketFd, toSend.c_str() + totalSent,
-			toSend.length() - totalSent, 0);
+			toSend.length() - totalSent, MSG_NOSIGNAL);
 		if (bytesSent <= 0) {
 			std::ostringstream out;
 			out << "Failed to send message \"" << message << "\"";

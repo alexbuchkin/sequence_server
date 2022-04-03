@@ -53,6 +53,9 @@ void Server::Run()
 		}
 		if (Connections.size() >= MAX_CONNECTIONS) {
 			PRINT_ERROR_MESSAGE("Too many opened connections");
+			if (close(newSocketFd) == -1) {
+				PRINT_PERROR_MESSAGE("Failed to close socket");
+			}
 			continue;
 		}
 		
