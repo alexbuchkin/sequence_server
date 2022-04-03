@@ -14,18 +14,18 @@
 class Server
 {
 public:
-	Server(uint16_t port);
-	~Server();
-	void Run();
-	
+    Server(uint16_t port);
+    ~Server();
+    void Run();
+    
 private:
-	void RemoveInterruptedConnections();
-	
+    void RemoveInterruptedConnections();
+    
 private:
-	uint16_t Port;
-	int ListeningSocketFd;
-	std::list<std::future<void>> Connections;
-	
+    uint16_t Port;
+    int ListeningSocketFd;
+    std::list<std::future<void>> Connections;
+    
 private:
-	const size_t MAX_CONNECTIONS = 100;
+    const size_t MAX_CONNECTIONS = 100;
 };

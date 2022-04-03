@@ -7,23 +7,23 @@
 #include <sstream>
 
 namespace {
-	
-std::mutex printMutex;	
+    
+std::mutex printMutex;    
 
 } // namespace
 
 #define PRINT_ERROR_MESSAGE(msg) \
 do {  \
-	std::ostringstream out;  \
-	out << __FILE__ << ":" << __LINE__ << "   " << (msg);  \
-	const std::lock_guard lock(printMutex);  \
-	std::cerr << out.str() << std::endl;  \
+    std::ostringstream out;  \
+    out << __FILE__ << ":" << __LINE__ << "   " << (msg);  \
+    const std::lock_guard lock(printMutex);  \
+    std::cerr << out.str() << std::endl;  \
 } while(0);
 
 #define PRINT_PERROR_MESSAGE(msg) \
 do {  \
-	std::ostringstream out;  \
-	out << __FILE__ << ":" << __LINE__ << "   " << (msg);  \
-	const std::lock_guard lock(printMutex);  \
-	perror(out.str().c_str());  \
+    std::ostringstream out;  \
+    out << __FILE__ << ":" << __LINE__ << "   " << (msg);  \
+    const std::lock_guard lock(printMutex);  \
+    perror(out.str().c_str());  \
 } while(0);
