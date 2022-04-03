@@ -5,11 +5,13 @@ using namespace std::chrono_literals;
 Server::Server(uint16_t port)
 	: Port(port)
 {
+	LOG("Constructing server");
 	ListeningSocketFd = socket(AF_INET, SOCK_STREAM, 0);
 	if (ListeningSocketFd == -1) {
 		PRINT_PERROR_MESSAGE("Failed to open listening socket");
 		exit(1);
 	}
+	LOG(std::string("Listening socket fd is ") + std::to_string(ListeningSocketFd));
 	
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof(addr));
@@ -30,6 +32,7 @@ Server::Server(uint16_t port)
 
 Server::~Server()
 {
+	LOG("Destructing server");
 	for (auto& future : Connections) {
 		future.wait();
 	}
@@ -64,8 +67,10 @@ void Server::Run()
 
 void Server::RemoveInterruptedConnections()
 {
+	LOG("Removing interrupted connections");
 	for (auto it = Connections.begin(); it != Connections.end();) {
 		if (it->wait_for(0ms) == std::future_status::ready) {
+			LOG("Removing one");
 			it = Connections.erase(it);
 		} else {
 			++it;

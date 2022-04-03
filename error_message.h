@@ -20,6 +20,8 @@ do {  \
 	std::cerr << out.str() << std::endl;  \
 } while(0);
 
+#define LOG(msg) PRINT_ERROR_MESSAGE(msg)
+
 #define PRINT_PERROR_MESSAGE(msg) \
 do {  \
 	std::ostringstream out;  \
