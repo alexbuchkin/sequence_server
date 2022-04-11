@@ -48,17 +48,6 @@ void Server::Run()
             continue;
         }
         
-        if (Connections.size() >= MAX_CONNECTIONS) {
-            RemoveInterruptedConnections();
-        }
-        if (Connections.size() >= MAX_CONNECTIONS) {
-            PRINT_ERROR_MESSAGE("Too many opened connections");
-            if (close(newSocketFd) == -1) {
-                PRINT_PERROR_MESSAGE("Failed to close socket");
-            }
-            continue;
-        }
-        
         Connections.push_back(std::async(std::launch::async, [newSocketFd](){
             ClientHandler(newSocketFd).Handle();
         }));

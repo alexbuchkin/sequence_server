@@ -25,7 +25,4 @@ private:
     uint16_t Port;
     int ListeningSocketFd;
     std::list<std::future<void>> Connections;
-    
-private:
-    const size_t MAX_CONNECTIONS = 100;
 };
