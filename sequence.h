@@ -16,5 +16,6 @@ private:
     bool IsSet_ = false;
     uint64_t Base;
     uint64_t Step;
+    uint64_t CurrentValue;
 };
 
