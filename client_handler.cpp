@@ -44,17 +44,15 @@ CommandInfo ParseCommand(const std::string& receivedText)
             << "\". Must be in range [1, "
             << ClientHandler::NUMBER_OF_SEQUENCES << "]";
         commandInfo.ErrorInfo = out.str();
-    } else if (!(std::istringstream(match[2].str()) >> commandInfo.Base)
-        || commandInfo.Base == 0) {
+    } else if (!(std::istringstream(match[2].str()) >> commandInfo.Base)) {
         std::ostringstream out;
         out << "Invalid base argument \"" << match[2].str()
-            << "\". Must fit in uint64_t and be greater than 0";
+            << "\". Must fit in uint64_t";
         commandInfo.ErrorInfo = out.str();
-    } else if (!(std::istringstream(match[3].str()) >> commandInfo.Step)
-        || commandInfo.Step == 0) {
+    } else if (!(std::istringstream(match[3].str()) >> commandInfo.Step)) {
         std::ostringstream out;
         out << "Invalid step argument \"" << match[3].str()
-            << "\". Must fit in uint64_t and be greater than 0";
+            << "\". Must fit in uint64_t";
         commandInfo.ErrorInfo = out.str();
     }
     
@@ -121,29 +119,32 @@ void ClientHandler::HandleUpdateSequenceCommand(const CommandInfo& commandInfo)
         return;
     }
     
-    Sequences[commandInfo.SeqNumber].Set(commandInfo.Base, commandInfo.Step);
+    if (commandInfo.Base != 0 && commandInfo.Step != 0) {
+        Sequences[commandInfo.SeqNumber].Set(commandInfo.Base, commandInfo.Step);
+    }
 }
 
 void ClientHandler::HandleExportSequencesCommand()
 {
-    auto it = std::find_if(Sequences.cbegin(), Sequences.cend(),
-        [](const auto& seq){ return !seq.IsSet(); });
-    if (it != Sequences.cend()) {
-        std::ostringstream out;
-        out << "Sequence #" << std::distance(Sequences.cbegin(), it) + 1
-            << " is not set";
-        SendMessage(out.str());
-        return;
-    }
-    
     while (IsHandling) {
         std::ostringstream out;
-        out << Sequences.begin()->GetNextValue();
-        for (auto it = std::next(Sequences.begin()); it != Sequences.end(); ++it) {
-            out << " " << it->GetNextValue();
+        bool isEmpty = true;
+
+        for (auto& seq : Sequences) {
+            if (!seq.IsSet()) {
+                continue;
+            }
+
+            if (!isEmpty) {
+                out << " ";
+            }
+            out << seq.GetNextValue();
+            isEmpty = false;
         }
         
-        SendMessage(out.str());
+        if (!isEmpty) {
+            SendMessage(out.str());
+        }
         sleep(1);
     }
 }
