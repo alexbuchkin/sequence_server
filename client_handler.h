@@ -5,6 +5,7 @@
 #include <cstring>
 #include <errno.h>
 #include <iterator>
+#include <mutex>
 #include <regex>
 #include <sstream>
 #include <string>
@@ -12,6 +13,7 @@
 #include <unistd.h>
 
 #include "error_message.h"
+#include "pipe.h"
 #include "sequence.h"
 #include "signal_handling.h"
 
@@ -32,7 +34,8 @@ struct CommandInfo {
 class ClientHandler
 {
 public:
-    ClientHandler(int socketFd);
+    ClientHandler(uint64_t connectionId, int socketFd, Pipe& pipe);
+    ClientHandler(const ClientHandler&) = delete;
     ~ClientHandler();
     void Handle();
     
@@ -50,7 +53,9 @@ public:
     
 private:
     bool IsHandling = true;
+    const uint64_t ConnectionId;
     const int SocketFd;
     std::array<Sequence, NUMBER_OF_SEQUENCES> Sequences;
     char Buffer[BUFFER_LENGTH];
+    Pipe& Pipe_;
 };

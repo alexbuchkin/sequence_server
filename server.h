@@ -9,7 +9,7 @@
 #include <netdb.h>
 #include <sys/socket.h>
 
-#include "client_handler.h"
+#include "connection_holder.h"
 #include "error_message.h"
 #include "signal_handling.h"
 
@@ -19,12 +19,9 @@ public:
     Server(uint16_t port);
     ~Server();
     void Run();
-    
-private:
-    void RemoveInterruptedConnections();
-    
+
 private:
     uint16_t Port;
     int ListeningSocketFd;
-    std::list<std::future<void>> Connections;
+    ConnectionHolder Connections;
 };

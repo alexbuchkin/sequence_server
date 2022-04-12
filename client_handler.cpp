@@ -68,28 +68,34 @@ CommandInfo ParseCommand(const std::string& receivedText)
     
 } // namespace
 
-ClientHandler::ClientHandler(int socketFd)
-    : SocketFd(socketFd)
+ClientHandler::ClientHandler(uint64_t connectionId, int socketFd, Pipe& pipe)
+    : ConnectionId(connectionId)
+    , SocketFd(socketFd)
+    , Pipe_(pipe)
     {}
-    
+
 ClientHandler::~ClientHandler()
 {
     if (close(SocketFd) == -1) {
         PRINT_PERROR_MESSAGE("Unable to close socket");
     }
+
+    std::lock_guard(Pipe_.Mutex);
+    Pipe_.Queue.push(ConnectionId);
 }
 
 void ClientHandler::Handle()
 {
     while (!IsSignalCaught && IsHandling) {
         memset(Buffer, 0, sizeof(Buffer));
-        if (recv(SocketFd, Buffer, sizeof(Buffer), 0) <= 0) {
+        ssize_t bytesRead = recv(SocketFd, Buffer, sizeof(Buffer), MSG_DONTWAIT);
+        if (bytesRead == -1 && errno != EAGAIN && errno != EWOULDBLOCK) {
             PRINT_PERROR_MESSAGE("Cannot read anything from client");
             IsHandling = false;
             break;
+        } else if (bytesRead > 0) {
+            HandleCommand();
         }
-        
-        HandleCommand();
     }
 }
 

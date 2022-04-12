@@ -30,10 +30,6 @@ Server::Server(uint16_t port)
 
 Server::~Server()
 {
-    for (auto& future : Connections) {
-        future.wait();
-    }
-
     if (close(ListeningSocketFd) == -1) {
         PRINT_PERROR_MESSAGE("Failed to close listening socket");
     }
@@ -49,20 +45,8 @@ void Server::Run()
             }
             continue;
         } else {
-            Connections.push_back(std::async(std::launch::async, [newSocketFd](){
-                ClientHandler(newSocketFd).Handle();
-            }));
+            Connections.Add(newSocketFd);
         }
     }
 }
 
-void Server::RemoveInterruptedConnections()
-{
-    for (auto it = Connections.begin(); it != Connections.end();) {
-        if (it->wait_for(0ms) == std::future_status::ready) {
-            it = Connections.erase(it);
-        } else {
-            ++it;
-        }
-    }
-}
