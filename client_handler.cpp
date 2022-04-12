@@ -81,11 +81,7 @@ ClientHandler::~ClientHandler()
 
 void ClientHandler::Handle()
 {
-    while (true) {
-        if (!IsHandling) {
-            break;
-        }
-
+    while (!IsSignalCaught && IsHandling) {
         memset(Buffer, 0, sizeof(Buffer));
         if (recv(SocketFd, Buffer, sizeof(Buffer), 0) <= 0) {
             PRINT_PERROR_MESSAGE("Cannot read anything from client");
@@ -126,7 +122,7 @@ void ClientHandler::HandleUpdateSequenceCommand(const CommandInfo& commandInfo)
 
 void ClientHandler::HandleExportSequencesCommand()
 {
-    while (IsHandling) {
+    while (!IsSignalCaught && IsHandling) {
         std::ostringstream out;
         bool isEmpty = true;
 

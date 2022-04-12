@@ -3,6 +3,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <cstring>
+#include <errno.h>
 #include <future>
 #include <list>
 #include <netdb.h>
@@ -10,6 +11,7 @@
 
 #include "client_handler.h"
 #include "error_message.h"
+#include "signal_handling.h"
 
 class Server
 {

@@ -5,7 +5,7 @@ using namespace std::chrono_literals;
 Server::Server(uint16_t port)
     : Port(port)
 {
-    ListeningSocketFd = socket(AF_INET, SOCK_STREAM, 0);
+    ListeningSocketFd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
     if (ListeningSocketFd == -1) {
         PRINT_PERROR_MESSAGE("Failed to open listening socket");
         exit(1);
@@ -41,16 +41,18 @@ Server::~Server()
 
 void Server::Run()
 {
-    while (true) {
+    while (!IsSignalCaught) {
         int newSocketFd = accept(ListeningSocketFd, nullptr, nullptr);
         if (newSocketFd == -1) {
-            PRINT_PERROR_MESSAGE("Failed to accept");
+            if (errno != EAGAIN && errno != EWOULDBLOCK) {
+                PRINT_PERROR_MESSAGE("Failed to accept");
+            }
             continue;
+        } else {
+            Connections.push_back(std::async(std::launch::async, [newSocketFd](){
+                ClientHandler(newSocketFd).Handle();
+            }));
         }
-        
-        Connections.push_back(std::async(std::launch::async, [newSocketFd](){
-            ClientHandler(newSocketFd).Handle();
-        }));
     }
 }
 

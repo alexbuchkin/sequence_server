@@ -13,6 +13,7 @@
 
 #include "error_message.h"
 #include "sequence.h"
+#include "signal_handling.h"
 
 enum class CommandType {
     ERROR,

@@ -3,9 +3,11 @@
 #include <sstream>
 
 #include "server.h"
+#include "signal_handling.h"
 
 int main(int argc, char** argv)
 {
+    signal(SIGINT, HandleSignal);
     uint16_t port = 12345;
     if (argc == 2) {
         std::istringstream in(argv[1]);
