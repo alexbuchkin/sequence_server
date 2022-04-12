@@ -16,8 +16,21 @@
 class Server
 {
 public:
+    /*
+     * Opens listening socket
+     */
     Server(uint16_t port);
+
+    /*
+     * Closes listening socket
+     */
     ~Server();
+
+    /*
+     * Tries to call accept from listening socket
+     * and to obtain new connection
+     * in eternal cycle
+     */
     void Run();
 
 private:

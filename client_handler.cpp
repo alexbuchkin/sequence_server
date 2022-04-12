@@ -2,6 +2,9 @@
 
 namespace {
 
+/*
+ * Trims heading and trailing space characters
+ */
 std::string Trim(const std::string& str)
 {
     const size_t firstNonSpaceIndex = std::distance(str.cbegin(),

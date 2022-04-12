@@ -12,6 +12,9 @@ std::mutex printMutex;
 
 } // namespace
 
+/*
+ * Print detailed error message
+ */
 #define PRINT_ERROR_MESSAGE(msg) \
 do {  \
     std::ostringstream out;  \
@@ -20,6 +23,9 @@ do {  \
     std::cerr << out.str() << std::endl;  \
 } while(0);
 
+/*
+ * Print detailed error message with perror
+ */
 #define PRINT_PERROR_MESSAGE(msg) \
 do {  \
     std::ostringstream out;  \
